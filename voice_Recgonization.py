@@ -52,10 +52,10 @@ youtube Full screen mode = f
 """
 engine.setProperty('voice', voices[1].id)
 cnt1,cnt1whatsapp = 0,0
-GMAIL_ID = 'wadkaraditya824@gmail.com'
-GMAIL_PSD = '8625994933'
-news_api_key = "fcebce30abff45c4bc252594a06b1cb7"
-weather_api_key = "710e105ff069d401d319b833c155511f"
+GMAIL_ID = 'Your Email'
+GMAIL_PSD = 'Password'
+news_api_key = "YOUR KEY"
+weather_api_key = "YOUR KEY"
 
 df = pd.read_excel("birthday.xlsx")
 taskcount, commandcount = 0,0
