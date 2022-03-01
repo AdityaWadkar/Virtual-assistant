@@ -51,10 +51,10 @@ youtube Full screen mode = f
 """
 engine.setProperty('voice', voices[1].id)
 cnt1, cnt1whatsapp = 0,0
-GMAIL_ID = 'EMAIL_ADDRESS'
-GMAIL_PSD = 'PASSWORD'
-news_api_key = "YOUR_KEY"
-weather_api_key = "YOUR_KEY"
+GMAIL_ID = 'YOUR_EMAIL_ADDRESS'
+GMAIL_PSD = 'YOUR_PASSWORD'
+news_api_key = "YOUR API KEY"
+weather_api_key = "YOUR API KEY"
 order=""
 df = pd.read_excel("birthday.xlsx")
 attempts,sleepcount,taskcount, commandcount,splitcommand,speak_frequency=0,0,0,0,0,0
@@ -105,6 +105,27 @@ def pick_aatachment():
     root.destroy()
     root.mainloop()
     return file_select
+
+def invalid_login_email(to,sub,message,file_name):
+    msg = MIMEMultipart()
+    msg["From"] = "Aditya Wadkar"
+    msg["To"] = to
+    msg["subject"] = sub
+    msg.attach(MIMEText(message, 'plain'))
+
+    # filename = os.path.basename(file_name)  # file select
+    attachment = open(file_name, "rb")
+    part = MIMEBase('application', 'octet-stream')
+    part.set_payload(attachment.read())
+    encoders.encode_base64(part)
+    part.add_header('content-Disposition', f'attachment; filename ={file_name}')
+    msg.attach(part)
+    session = smtplib.SMTP('smtp.gmail.com', 587)  # use gmail with port
+    session.starttls()  # enable security
+    session.login(GMAIL_ID, GMAIL_PSD)  # login with mail_id and password
+    text = msg.as_string()
+    session.sendmail(GMAIL_ID, to, text)
+    session.quit()
 
 def mail_with_attachment(to, sub, message, name, attach):
     file_select = attach
@@ -267,7 +288,10 @@ def face_authentication():
                         invalid_face += 1
                         # print(f"invalid face : {invalid_face}")
                         if invalid_face >=100:
-                            close_program()
+                            mal_user = "mal_user.png"
+                            cv2.imwrite(mal_user, img)
+                            shutil.move('mal_user.png', 'uicomponents/')
+                            close_program("uicomponents/mal_user.png")
                             sys.exit()
                 break
                 # cv2.putText(img, str(id), (x + 5, y - 5), font, 1, (255, 0, 255), 2)
@@ -279,10 +303,11 @@ def face_authentication():
     cam.release()
     cv2.destroyAllWindows()
 
-def close_program():
-    sendmail("wadkaraditya923@gmail.com", "Aditi Security alert!!!!",
+def close_program(mal):
+    invalid_login_email("wadkaraditya923@gmail.com", "Aditi Security alert!!!!",
              f"An Unauthorized person tried to access me at {datetime.datetime.now().strftime('%H:%M:%S')}\nThe pic of that user is attached below.\nPlease Take a look in this matter\nIf it was done by you mistakenly. please Ignore This mail !!\n\nYou received this mail to ensure Security of Application ",
-                1)
+             mal)
+    os.remove("uicomponents/mal_user.png")
     speak("You are not a valid user . closing this application")
 
 def validation():
@@ -313,7 +338,16 @@ def validation():
                 speak("Password is incorrect !!please retype it. !This is last chance!!")
             attempts =attempts +1
             if attempts ==2:
-                close_program()                        
+                cam = cv2.VideoCapture(0)
+                while True:
+                    ret, img = cam.read()  # read the frames using above created objects
+                    mal_user = "mal_user.png"
+                    cv2.imwrite(mal_user, img)
+                    shutil.move('mal_user.png', 'uicomponents/')
+                    close_program("uicomponents/mal_user.png")
+                    break
+                cam.release()
+                cv2.destroyAllWindows()
                 sys.exit()
 
 
@@ -1376,3 +1410,5 @@ App = QApplication(sys.argv)
 alexa = MainUI()
 alexa.show()
 sys.exit(App.exec_())
+
+
