@@ -57,7 +57,7 @@ Learning.
 - keyboard
 - math
 
-## Authors
+## Author
 
 - [@Aditya Wadkar](https://www.github.com/AdityaWadkar)
 
